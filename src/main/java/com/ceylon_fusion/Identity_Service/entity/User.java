@@ -1,11 +1,13 @@
 package com.ceylon_fusion.Identity_Service.entity;
 
+import com.ceylon_fusion.Identity_Service.entity.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+
 
 import java.time.LocalDateTime;
 
@@ -32,7 +34,8 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private String role; // User roles like ADMIN, BUYER, etc.
+    @Enumerated(EnumType.STRING) // Store as a string in the database
+    private Role role;// User roles like ADMIN, BUYER,SELLER etc.
 
     @CreationTimestamp
     private LocalDateTime createdAt;
