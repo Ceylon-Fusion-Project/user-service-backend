@@ -45,11 +45,11 @@ public class User {
     private LocalDateTime updatedAt;
 
     // Relationship with UserPurchaseHistory
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserPurchaseHistory> purchaseHistories;
 
     // Relationship with UserBookingHistory
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserBookingHistory> bookingHistories;
 
 }
