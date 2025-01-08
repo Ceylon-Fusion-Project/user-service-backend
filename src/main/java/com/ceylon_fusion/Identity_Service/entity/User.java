@@ -10,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Entity
@@ -42,5 +43,13 @@ public class User {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    // Relationship with UserPurchaseHistory
+    @OneToMany(mappedBy = "user")
+    private List<UserPurchaseHistory> purchaseHistories;
+
+    // Relationship with UserBookingHistory
+    @OneToMany(mappedBy = "user")
+    private List<UserBookingHistory> bookingHistories;
 
 }
