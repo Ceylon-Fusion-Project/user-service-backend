@@ -36,5 +36,51 @@ public class UserBookingHistory {
     @Column(name = "total_cost", nullable = false)
     private Double totalCost;
 
+    public Long getId() {
+        return id;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Long getBookingId() {
+        return bookingId;
+    }
+
+    public void setBookingId(Long bookingId) {
+        this.bookingId = bookingId;
+    }
+
+    public LocalDateTime getBookedDate() {
+        return bookedDate;
+    }
+
+    public void setBookedDate(LocalDateTime bookedDate) {
+        this.bookedDate = bookedDate;
+    }
+
+    public String getPackageTitle() {
+        return packageTitle;
+    }
+
+    public void setPackageTitle(String packageTitle) {
+        this.packageTitle = packageTitle;
+    }
+
+    public Double getTotalCost() {
+        return totalCost;
+    }
+
+    public void setTotalCost(Double totalCost) {
+        this.totalCost = totalCost;
+    }
 }

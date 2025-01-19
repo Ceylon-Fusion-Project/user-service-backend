@@ -1,29 +1,44 @@
 package com.ceylon_fusion.Identity_Service.dto.response;
 
 import com.ceylon_fusion.Identity_Service.entity.enums.Role;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Data
 @NoArgsConstructor
-@Getter
-@Setter
-public class UserResponseDTO {
-    private Long userId; // Updated from 'id' to match User entity
+
+@Data
+public class UserRegistrationResponseDTO {
+    private Long userId;
     private String username;
     private String email;
     private Role role;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public UserResponseDTO(Long id, String username, String email, Role role, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.userId = id;
+    // Constructor that initializes all fields
+    public UserRegistrationResponseDTO(Long userId, String username, String email, Role role, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.userId = userId;
         this.username = username;
         this.email = email;
         this.role = role;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    // Optional: Update the toString() method to include all fields
+    @Override
+    public String toString() {
+        return "UserRegistrationResponseDTO{" +
+                "id=" + userId +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", role=" + role +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 
     public Long getUserId() {

@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class UserPurchaseHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_purchase_id")
+    @Column(name = "user_purchase_his_id")
     private Long id;
 
     @ManyToOne
@@ -35,4 +35,44 @@ public class UserPurchaseHistory {
 
     @Column(name = "total_amount", nullable = false)
     private Double totalAmount;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
+    }
+
+    public LocalDateTime getPurchasedDate() {
+        return purchasedDate;
+    }
+
+    public void setPurchasedDate(LocalDateTime purchasedDate) {
+        this.purchasedDate = purchasedDate;
+    }
+
+    public Double getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(Double totalAmount) {
+        this.totalAmount = totalAmount;
+    }
 }
