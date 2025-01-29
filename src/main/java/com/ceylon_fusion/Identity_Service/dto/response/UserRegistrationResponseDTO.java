@@ -1,6 +1,6 @@
 package com.ceylon_fusion.Identity_Service.dto.response;
 
-import com.ceylon_fusion.Identity_Service.entity.enums.Role;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,16 +14,16 @@ public class UserRegistrationResponseDTO {
     private Long userId;
     private String username;
     private String email;
-    private Role role;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     // Constructor that initializes all fields
-    public UserRegistrationResponseDTO(Long userId, String username, String email, Role role, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public UserRegistrationResponseDTO(Long userId, String username, String email,  LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.userId = userId;
         this.username = username;
         this.email = email;
-        this.role = role;
+
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -35,7 +35,7 @@ public class UserRegistrationResponseDTO {
                 "id=" + userId +
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
-                ", role=" + role +
+
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';
@@ -65,13 +65,7 @@ public class UserRegistrationResponseDTO {
         this.email = email;
     }
 
-    public Role getRole() {
-        return role;
-    }
 
-    public void setRole(Role role) {
-        this.role = role;
-    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;

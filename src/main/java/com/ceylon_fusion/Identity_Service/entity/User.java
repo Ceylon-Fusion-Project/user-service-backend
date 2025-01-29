@@ -1,15 +1,15 @@
 package com.ceylon_fusion.Identity_Service.entity;
 
-import com.ceylon_fusion.Identity_Service.entity.enums.Role;
+
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
-
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Entity
@@ -36,9 +36,9 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING) // Store as a string in the database
-    private Role role;// User roles like ADMIN, TOURIST,SELLER etc.
+//    @Column(nullable = false)
+//    @Enumerated(EnumType.STRING) // Store as a string in the database
+//    private Role role;// User roles like ADMIN, TOURIST,SELLER etc.
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -49,8 +49,21 @@ public class User {
     @Column(name = "reset_token") // Ensure this matches your database column name
     private String resetToken;
 
-    @Column(name = "token_expiry") // Ensure this matches your database column name
+    @Column(name = "token_expiry")
     private Instant tokenExpiry;
+
+    @ManyToMany(fetch = FetchType.EAGER)  // Fetch roles eagerly to load them with the user
+    @JoinTable(
+            name = "user_roles",  // Join table for the relationship
+            joinColumns = @JoinColumn(name = "user_id"),  // Foreign key to User
+            inverseJoinColumns = @JoinColumn(name = "role_id")  // Foreign key to Role
+    )
+    private Set<Role> roles = new HashSet<>();
+
+
+
+
+
 
     // Relationship with UserPurchaseHistory
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -92,13 +105,13 @@ public class User {
         this.password = password;
     }
 
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
+//    public Role getRole() {
+//        return role;
+//    }
+//
+//    public void setRole(Role role) {
+//        this.role = role;
+//    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
@@ -140,5 +153,13 @@ public class User {
 
     public Instant getTokenExpiry() {
         return null;
+    }
+
+    public String getResetToken() {
+        return resetToken;
+    }
+
+
+    public void setRole(String user) {
     }
 }

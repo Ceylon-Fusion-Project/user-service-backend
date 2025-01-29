@@ -11,7 +11,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 
 @Configuration
-//@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 
 public class SecurityConfig {
 
@@ -22,7 +22,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.disable()) // Disable CORS if not needed or configure it explicitly
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        // Public Endpoints
+                   //      Public Endpoints
 //                        .requestMatchers("/api/v1/users/register", "/api/v1/users/login", "/api/v1/users/forgot-password", "/api/v1/users/reset-password").permitAll()
 //
 //                        // Admin Endpoints
@@ -46,7 +46,7 @@ public class SecurityConfig {
 //                        // Any other requests require authentication
 //                        .anyRequest().authenticated()
 
-                        .requestMatchers("/api/v1/users/**").permitAll() // Public Endpoints
+                       // .requestMatchers("/api/v1/users/**").permitAll() // Public Endpoints
                         .anyRequest().authenticated());
 
 

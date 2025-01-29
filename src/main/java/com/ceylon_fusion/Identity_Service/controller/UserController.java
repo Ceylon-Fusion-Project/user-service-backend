@@ -73,6 +73,7 @@ public class UserController {
 
 
     @GetMapping("/get-by-id{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<StandardResponse> getUserById(@PathVariable Long id) {
         UserResponseDTO user = userService.getUserById(id);
         return ResponseEntity.ok(
@@ -81,6 +82,7 @@ public class UserController {
 
     }
     @PutMapping("/update-by-id{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<StandardResponse> updateUser(
             @PathVariable Long id,
             @RequestBody UserUpdateRequestDTO requestDTO
@@ -104,6 +106,7 @@ public class UserController {
 
 // Retrieve Purchase History for Tourist
 @GetMapping("/{userId}/purchase-history")
+@PreAuthorize("hasAnyAuthority('ADMIN', 'SELLER', 'TOURIST')")
 public ResponseEntity<StandardResponse> getTouristPurchaseHistory(@PathVariable Long userId) {
     List<UserPurchaseHistoryResponseDTO> purchaseHistory = userPurchaseHistoryService.getPurchaseHistoriesForUser(userId);
     return ResponseEntity.ok(new StandardResponse(200, "Tourist Purchase History Retrieved", purchaseHistory));
@@ -111,6 +114,7 @@ public ResponseEntity<StandardResponse> getTouristPurchaseHistory(@PathVariable 
 
     // Retrieve Booking History for Tourist
     @GetMapping("/{userId}/booking-history")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SELLER', 'TOURIST')")
     public ResponseEntity<StandardResponse> getTouristBookingHistory(@PathVariable Long userId) {
         List<UserBookingHistoryResponseDTO> bookingHistory = userBookingHistoryService.getBookingHistoriesForUser(userId);
         return ResponseEntity.ok(new StandardResponse(200, "Tourist Booking History Retrieved", bookingHistory));
@@ -119,6 +123,7 @@ public ResponseEntity<StandardResponse> getTouristPurchaseHistory(@PathVariable 
 
     // Purchase History Endpoint
     @GetMapping("/purchaseHistory")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public List<UserPurchaseHistoryResponseDTO> getPurchaseHistories(
             @RequestParam Long userId,
             @RequestParam String role,
@@ -128,6 +133,7 @@ public ResponseEntity<StandardResponse> getTouristPurchaseHistory(@PathVariable 
 
 //    // Booking History Endpoint
     @GetMapping("/bookingHistory")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public List<UserBookingHistoryResponseDTO> getBookingHistories(
             @RequestParam Long userId,
             @RequestParam String role)

@@ -38,6 +38,7 @@ public class UserServiceIMPL implements UserService {
         if (userRepo.existsByUsername(requestDTO.getUsername())) {
             throw new UsernameAlreadyExistsException("The username is already taken. Please try another one.");
         }
+
         // Check if the email already exists
         if (userRepo.existsByEmail(requestDTO.getEmail())) {
             throw new EmailAlreadyExistsException("The email is already registered. Please use a different email.");
@@ -48,7 +49,14 @@ public class UserServiceIMPL implements UserService {
         user.setUsername(requestDTO.getUsername());
         user.setEmail(requestDTO.getEmail());
         user.setPassword(passwordEncoder.encode(requestDTO.getPassword())); // Hash password
-        user.setRole(requestDTO.getRole()); // Directly set role
+
+        // Set role; if none is provided, default to "USER"
+        if (requestDTO.getRole() == null || requestDTO.getRole().isEmpty()) {
+            user.setRole("USER"); // Set default role
+        } else {
+            user.setRole(requestDTO.getRole());
+        }
+
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
 
@@ -60,10 +68,8 @@ public class UserServiceIMPL implements UserService {
                 savedUser.getUserId(),
                 savedUser.getUsername(),
                 savedUser.getEmail(),
-                savedUser.getRole(),
                 savedUser.getCreatedAt(),
                 savedUser.getUpdatedAt()
-
         );
     }
 
@@ -83,7 +89,7 @@ public class UserServiceIMPL implements UserService {
                 user.getUserId(),
                 user.getUsername(),
                 user.getEmail(),
-                user.getRole(),
+
                 user.getCreatedAt(),
                 user.getUpdatedAt()
         );
@@ -131,7 +137,7 @@ public class UserServiceIMPL implements UserService {
                 user.getUserId(),
                 user.getUsername(),
                 user.getEmail(),
-                user.getRole(),
+
                 user.getCreatedAt(),
                 user.getUpdatedAt()
         );
@@ -154,7 +160,7 @@ public class UserServiceIMPL implements UserService {
                 updatedUser.getUserId(), // Maps the database userId to the DTO id
                 updatedUser.getUsername(),
                 updatedUser.getEmail(),
-                updatedUser.getRole(),
+
                 updatedUser.getCreatedAt(),
                 updatedUser.getUpdatedAt()
         );
