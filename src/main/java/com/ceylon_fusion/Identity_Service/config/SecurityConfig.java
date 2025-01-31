@@ -11,7 +11,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+
 
 public class SecurityConfig {
 
@@ -45,8 +45,8 @@ public class SecurityConfig {
 //
 //                        // Any other requests require authentication
 //                        .anyRequest().authenticated()
-
-                       // .requestMatchers("/api/v1/users/**").permitAll() // Public Endpoints
+                        .requestMatchers("/**").permitAll()
+                        .requestMatchers("/api/v1/users/**").permitAll() // Public Endpoints
                         .anyRequest().authenticated());
 
 

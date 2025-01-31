@@ -54,68 +54,81 @@ public class UserController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<StandardResponse> loginUser(@Valid @RequestBody UserLoginRequestDTO requestDTO) {
+    public ResponseEntity<StandardResponse> loginUser(
+            @Valid @RequestBody UserLoginRequestDTO requestDTO)
+    {
         UserRegistrationResponseDTO response = userService.loginUser(requestDTO);
         return ResponseEntity.ok(new StandardResponse(200, "User Logged In Successfully", response));
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<StandardResponse> forgotPassword(@RequestParam String username) {
+    public ResponseEntity<StandardResponse> forgotPassword(
+            @RequestParam String username)
+    {
         String resetToken = userService.forgotPassword(username);
         return ResponseEntity.ok(new StandardResponse(200, "Password reset token generated.", resetToken));
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<StandardResponse> resetPassword(@RequestParam String token, @RequestBody @Valid ResetPasswordRequestDTO requestDTO) {
+    public ResponseEntity<StandardResponse> resetPassword(
+            @RequestParam String token,
+            @RequestBody @Valid ResetPasswordRequestDTO requestDTO) {
         userService.resetPassword(token, requestDTO);
         return ResponseEntity.ok(new StandardResponse(200, "Password reset successfully.", null));
     }
 
 
-    @GetMapping("/get-by-id{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<StandardResponse> getUserById(@PathVariable Long id) {
+
+    @GetMapping("/get-by-id")
+     //@PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<StandardResponse> getUserById(
+            @RequestParam Long id) {
         UserResponseDTO user = userService.getUserById(id);
-        return ResponseEntity.ok(
-                new StandardResponse(200, "User retrieved successfully", user)
-        );
-
-    }
-    @PutMapping("/update-by-id{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<StandardResponse> updateUser(
-            @PathVariable Long id,
-            @RequestBody UserUpdateRequestDTO requestDTO
-    ) {
-        UserResponseDTO updatedUser = userService.updateUser(id, requestDTO);
-        return ResponseEntity.ok(
-                new StandardResponse(200, "User updated successfully", updatedUser)
-        );
+        return ResponseEntity.ok(new StandardResponse(200, "User retrieved successfully", user));
     }
 
-    @DeleteMapping("/delete-by-id{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<StandardResponse> deleteUser(@PathVariable Long id) {
+@PutMapping("/update-by-id")
+//  @PreAuthorize("hasAuthority('ADMIN')")
+public ResponseEntity<StandardResponse> updateUser(
+        @RequestParam Long id,
+        @RequestBody UserUpdateRequestDTO requestDTO)
+{
+    UserResponseDTO updatedUser = userService.updateUser(id, requestDTO);
+    return ResponseEntity.ok(new StandardResponse(200, "User updated successfully", updatedUser));
+}
+
+
+    @DeleteMapping("/delete-by-id")
+    //  @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<StandardResponse> deleteUser(
+            @RequestParam Long id)
+    {
         userService.deleteUser(id);  // Call service method to delete the user
         return ResponseEntity.ok(new StandardResponse(200, "User deleted successfully", null));
     }
 
 
-
 /*end points for user history management*/
 
 // Retrieve Purchase History for Tourist
-@GetMapping("/{userId}/purchase-history")
-@PreAuthorize("hasAnyAuthority('ADMIN', 'SELLER', 'TOURIST')")
-public ResponseEntity<StandardResponse> getTouristPurchaseHistory(@PathVariable Long userId) {
-    List<UserPurchaseHistoryResponseDTO> purchaseHistory = userPurchaseHistoryService.getPurchaseHistoriesForUser(userId);
-    return ResponseEntity.ok(new StandardResponse(200, "Tourist Purchase History Retrieved", purchaseHistory));
-}
+
+    @GetMapping("/purchase-history")
+    //@PreAuthorize("hasAnyAuthority('ADMIN', 'SELLER', 'TOURIST')")
+    public ResponseEntity<StandardResponse> getTouristPurchaseHistory(
+            @RequestParam Long userId)
+    {
+        List<UserPurchaseHistoryResponseDTO> purchaseHistory = userPurchaseHistoryService.getPurchaseHistoriesForUser(userId);
+        return ResponseEntity.ok(new StandardResponse(200, "Tourist Purchase History Retrieved", purchaseHistory));
+    }
+
 
     // Retrieve Booking History for Tourist
-    @GetMapping("/{userId}/booking-history")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'SELLER', 'TOURIST')")
-    public ResponseEntity<StandardResponse> getTouristBookingHistory(@PathVariable Long userId) {
+
+    @GetMapping("/booking-history")
+    // @PreAuthorize("hasAnyAuthority('ADMIN', 'SELLER', 'TOURIST')")
+    public ResponseEntity<StandardResponse> getTouristBookingHistory(
+            @RequestParam Long userId)
+    {
         List<UserBookingHistoryResponseDTO> bookingHistory = userBookingHistoryService.getBookingHistoriesForUser(userId);
         return ResponseEntity.ok(new StandardResponse(200, "Tourist Booking History Retrieved", bookingHistory));
     }
@@ -123,7 +136,7 @@ public ResponseEntity<StandardResponse> getTouristPurchaseHistory(@PathVariable 
 
     // Purchase History Endpoint
     @GetMapping("/purchaseHistory")
-    @PreAuthorize("hasAuthority('ADMIN')")
+   // @PreAuthorize("hasAuthority('ADMIN')")
     public List<UserPurchaseHistoryResponseDTO> getPurchaseHistories(
             @RequestParam Long userId,
             @RequestParam String role,
@@ -133,7 +146,7 @@ public ResponseEntity<StandardResponse> getTouristPurchaseHistory(@PathVariable 
 
 //    // Booking History Endpoint
     @GetMapping("/bookingHistory")
-    @PreAuthorize("hasAuthority('ADMIN')")
+   // @PreAuthorize("hasAuthority('ADMIN')")
     public List<UserBookingHistoryResponseDTO> getBookingHistories(
             @RequestParam Long userId,
             @RequestParam String role)

@@ -1,6 +1,7 @@
 package com.ceylon_fusion.Identity_Service.dto.request;
 
 
+import com.ceylon_fusion.Identity_Service.entity.enums.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -25,7 +26,8 @@ public class UserRegistrationRequestDTO {
     @Size(min = 8)
     private String password;
 
-    private String role;
+    @NotNull
+    private Role role;
 
     public String getUsername() {
         return username;
@@ -51,11 +53,11 @@ public class UserRegistrationRequestDTO {
         this.password = password;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 }
