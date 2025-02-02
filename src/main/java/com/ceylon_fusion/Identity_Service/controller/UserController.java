@@ -79,7 +79,7 @@ public class UserController {
 
 
 
-    @GetMapping("/get-by-id")
+    @GetMapping("/admin/get-by-id")
      //@PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<StandardResponse> getUserById(
             @RequestParam Long id) {
@@ -87,7 +87,7 @@ public class UserController {
         return ResponseEntity.ok(new StandardResponse(200, "User retrieved successfully", user));
     }
 
-@PutMapping("/update-by-id")
+@PutMapping("/admin/update-by-id")
 //  @PreAuthorize("hasAuthority('ADMIN')")
 public ResponseEntity<StandardResponse> updateUser(
         @RequestParam Long id,
@@ -98,7 +98,7 @@ public ResponseEntity<StandardResponse> updateUser(
 }
 
 
-    @DeleteMapping("/delete-by-id")
+    @DeleteMapping("/admin/delete-by-id")
     //  @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<StandardResponse> deleteUser(
             @RequestParam Long id)
@@ -135,7 +135,7 @@ public ResponseEntity<StandardResponse> updateUser(
 
 
     // Purchase History Endpoint
-    @GetMapping("/purchaseHistory")
+    @GetMapping("/admin/purchaseHistory")
    // @PreAuthorize("hasAuthority('ADMIN')")
     public List<UserPurchaseHistoryResponseDTO> getPurchaseHistories(
             @RequestParam Long userId,
@@ -145,7 +145,7 @@ public ResponseEntity<StandardResponse> updateUser(
     }
 
 //    // Booking History Endpoint
-    @GetMapping("/bookingHistory")
+    @GetMapping("/admin/bookingHistory")
    // @PreAuthorize("hasAuthority('ADMIN')")
     public List<UserBookingHistoryResponseDTO> getBookingHistories(
             @RequestParam Long userId,
