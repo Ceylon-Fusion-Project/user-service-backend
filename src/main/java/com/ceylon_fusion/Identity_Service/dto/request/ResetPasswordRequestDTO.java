@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class ResetPasswordRequestDTO {
+    private String email;
     @NotNull
     @Size(min = 8)
     private String newPassword;
@@ -14,5 +15,13 @@ public class ResetPasswordRequestDTO {
 
     public void setNewPassword(String newPassword) {
         this.newPassword = newPassword;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
