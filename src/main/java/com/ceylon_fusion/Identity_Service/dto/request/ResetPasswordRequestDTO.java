@@ -18,6 +18,7 @@ public class ResetPasswordRequestDTO {
     }
 
     public String getEmail() {
+        
         return email;
     }
 
