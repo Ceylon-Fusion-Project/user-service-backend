@@ -28,4 +28,5 @@ public interface UserService {
     String forgotPassword(String email);
 
     void resetPassword(String token, @Valid ResetPasswordRequestDTO requestDTO);
+
 }
