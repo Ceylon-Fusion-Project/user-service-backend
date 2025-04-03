@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -58,7 +60,7 @@ public class UserRegistrationRequestDTO {
     private String zipCode;
 
     @Size(min = 0, max = 255, message = "Product preferences must be between 0 and 255 characters")
-    private String productPreferences;
+    private List<String> preferredCategories;
 
     public String getCfId() {
         return cfId;
@@ -96,12 +98,12 @@ public class UserRegistrationRequestDTO {
         this.zipCode = zipCode;
     }
 
-    public String getProductPreferences() {
-        return productPreferences;
+    public List<String> getPreferredCategories() {
+        return preferredCategories;
     }
 
-    public void setProductPreferences(String productPreferences) {
-        this.productPreferences = productPreferences;
+    public void setPreferredCategories(List<String> preferredCategories) {
+        this.preferredCategories = preferredCategories;
     }
 
     public String getCity() {

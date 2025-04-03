@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -77,7 +78,20 @@ public class UserController {
         return ResponseEntity.ok(new StandardResponse(200, "Password reset successfully.", null));
     }
 
-
+//    @PutMapping("/user/update-profile")
+//    public ResponseEntity<StandardResponse> updateUserProfile(
+//            @RequestParam Long id,
+//            @RequestPart("userData") UserUpdateRequestDTO requestDTO,
+//            @RequestPart(value = "profilePhoto", required = false) MultipartFile profilePhoto) {
+//
+//        // Set the profile photo if provided
+//        if (profilePhoto != null) {
+//            requestDTO.setProfilePhoto(profilePhoto);
+//        }
+//
+//        UserResponseDTO updatedUser = userService.updateUserProfile(id, requestDTO);
+//        return ResponseEntity.ok(new StandardResponse(200, "Profile updated successfully", updatedUser));
+//    }
 
     @GetMapping("/admin/get-by-id")
      //@PreAuthorize("hasAuthority('ADMIN')")

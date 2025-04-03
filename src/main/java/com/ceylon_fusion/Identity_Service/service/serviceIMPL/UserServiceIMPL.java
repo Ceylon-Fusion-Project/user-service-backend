@@ -15,6 +15,7 @@ import com.ceylon_fusion.Identity_Service.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -120,6 +121,21 @@ public class UserServiceIMPL implements UserService {
         user.setTokenExpiry(null); // Clear the expiry
         userRepo.save(user);
     }
+
+//    @Override
+//    public UserResponseDTO updateUserProfile(Long id, UserUpdateRequestDTO requestDTO) {
+//        User user = userRepo.findById(id)
+//                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+//
+//        // Update user details
+//        if(requestDTO.getUsername() != null) {
+//            user.setUsername(requestDTO.getUsername());
+//        }
+//        if(requestDTO.getEmail() != null) {
+//            user.setEmail(requestDTO.getEmail());
+//        }
+//
+//    }
 
     @Override
     public UserResponseDTO getUserById(Long id) {
