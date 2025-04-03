@@ -9,9 +9,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 import com.ceylon_fusion.Identity_Service.entity.enums.Role;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.HashSet;
+
 import java.util.List;
-import java.util.Set;
+
 
 
 @Entity
@@ -29,11 +29,26 @@ public class User {
     @Column(name = "user_id")
     private Long userId;
 
+    @Column(name = "cf_id", nullable = false, unique = true)
+    private String cf_id;
+
     @Column(name = "user_name",nullable = false, unique = true)
     private String username;
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(name = "address", nullable = false)
+    private String address;
+
+    @Column(name = "phone_number", nullable = false, unique = true)
+    private long phone_number;
+
+    @Column(name="country" , nullable = false)
+    private String country;
+
+    @Column(name="currency"     , nullable = false)
+    private String currency;
 
     @Column(nullable = false)
     private String password;
@@ -75,6 +90,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserBookingHistory> bookingHistories;
 
+
     public Long getUserId() {
         return userId;
     }
@@ -114,6 +130,7 @@ public class User {
     public void setRole(Role role) {
         this.role = role;
     }
+
 
     public LocalDateTime getCreatedAt() {
         return createdAt;

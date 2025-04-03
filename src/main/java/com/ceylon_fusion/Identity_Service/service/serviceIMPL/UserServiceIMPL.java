@@ -30,8 +30,7 @@ public class UserServiceIMPL implements UserService {
     private UserRepo userRepo;
 
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+
 
     @Override
     public UserRegistrationResponseDTO registerUser(UserRegistrationRequestDTO requestDTO) {
@@ -47,7 +46,8 @@ public class UserServiceIMPL implements UserService {
         User user = new User();
         user.setUsername(requestDTO.getUsername());
         user.setEmail(requestDTO.getEmail());
-        user.setPassword(passwordEncoder.encode(requestDTO.getPassword())); // Hash password
+
+
         user.setRole(requestDTO.getRole()); // Directly set role
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
@@ -74,9 +74,7 @@ public class UserServiceIMPL implements UserService {
         User user = userRepo.findByEmail(requestDTO.getEmail()) // FIXED: Use findByEmail instead of findByUsername
                 .orElseThrow(() -> new RuntimeException("Invalid email or password."));
 
-        if (!passwordEncoder.matches(requestDTO.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid email or password.");
-        }
+
 
         // Return user details (include role)
         return new UserRegistrationResponseDTO(
@@ -117,7 +115,7 @@ public class UserServiceIMPL implements UserService {
         }
 
         // Update the user's password
-        user.setPassword(passwordEncoder.encode(requestDTO.getNewPassword()));
+
         user.setResetToken(null); // Clear the reset token
         user.setTokenExpiry(null); // Clear the expiry
         userRepo.save(user);
