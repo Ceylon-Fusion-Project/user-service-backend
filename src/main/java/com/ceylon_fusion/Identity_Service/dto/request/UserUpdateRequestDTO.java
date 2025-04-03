@@ -11,6 +11,7 @@ import lombok.*;
 public class UserUpdateRequestDTO {
     private String username;
     private String email;
+    private String Role;
 
 
     public String getUsername() {
@@ -29,5 +30,11 @@ public class UserUpdateRequestDTO {
         this.email = email;
     }
 
+    public String getRole() {
+        return Role;
+    }
 
+    public void setRole(String role) {
+        Role = role;
+    }
 }
