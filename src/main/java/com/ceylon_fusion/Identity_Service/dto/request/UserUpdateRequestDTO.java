@@ -1,6 +1,6 @@
 package com.ceylon_fusion.Identity_Service.dto.request;
 
-import com.ceylon_fusion.Identity_Service.entity.enums.Role;
+
 import lombok.*;
 
 @NoArgsConstructor
@@ -11,7 +11,8 @@ import lombok.*;
 public class UserUpdateRequestDTO {
     private String username;
     private String email;
-    private Role role;
+    private String Role;
+
 
     public String getUsername() {
         return username;
@@ -29,11 +30,11 @@ public class UserUpdateRequestDTO {
         this.email = email;
     }
 
-    public Role getRole() {
-        return role;
+    public String getRole() {
+        return Role;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public void setRole(String role) {
+        Role = role;
     }
 }

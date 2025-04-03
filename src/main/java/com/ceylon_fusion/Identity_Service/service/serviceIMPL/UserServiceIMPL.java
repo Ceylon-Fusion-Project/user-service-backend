@@ -70,24 +70,25 @@ public class UserServiceIMPL implements UserService {
 
     @Override
     public UserRegistrationResponseDTO loginUser(UserLoginRequestDTO requestDTO) {
-        // Validate username and password
-        User user = userRepo.findByUsername(requestDTO.getUsername())
-                .orElseThrow(() -> new RuntimeException("Invalid username or password."));
+        // Validate email and password
+        User user = userRepo.findByEmail(requestDTO.getEmail()) // FIXED: Use findByEmail instead of findByUsername
+                .orElseThrow(() -> new RuntimeException("Invalid email or password."));
 
         if (!passwordEncoder.matches(requestDTO.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid username or password.");
+            throw new RuntimeException("Invalid email or password.");
         }
 
-        // Return user details (exclude sensitive fields)
+        // Return user details (include role)
         return new UserRegistrationResponseDTO(
                 user.getUserId(),
                 user.getUsername(),
                 user.getEmail(),
-                user.getRole(),
+                user.getRole(), // FIXED: Added missing role
                 user.getCreatedAt(),
                 user.getUpdatedAt()
         );
     }
+
 
     @Override
     public String forgotPassword(String username) {
@@ -131,7 +132,7 @@ public class UserServiceIMPL implements UserService {
                 user.getUserId(),
                 user.getUsername(),
                 user.getEmail(),
-                user.getRole(),
+
                 user.getCreatedAt(),
                 user.getUpdatedAt()
         );
@@ -154,7 +155,7 @@ public class UserServiceIMPL implements UserService {
                 updatedUser.getUserId(), // Maps the database userId to the DTO id
                 updatedUser.getUsername(),
                 updatedUser.getEmail(),
-                updatedUser.getRole(),
+
                 updatedUser.getCreatedAt(),
                 updatedUser.getUpdatedAt()
         );

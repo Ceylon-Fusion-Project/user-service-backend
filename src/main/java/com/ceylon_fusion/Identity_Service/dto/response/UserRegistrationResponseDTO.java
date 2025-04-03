@@ -28,6 +28,9 @@ public class UserRegistrationResponseDTO {
         this.updatedAt = updatedAt;
     }
 
+    public UserRegistrationResponseDTO(Long userId, String username, String email, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    }
+
     // Optional: Update the toString() method to include all fields
     @Override
     public String toString() {

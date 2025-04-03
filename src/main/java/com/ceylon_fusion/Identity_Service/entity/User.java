@@ -1,15 +1,17 @@
 package com.ceylon_fusion.Identity_Service.entity;
 
-import com.ceylon_fusion.Identity_Service.entity.enums.Role;
+
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-
+import com.ceylon_fusion.Identity_Service.entity.enums.Role;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Entity
@@ -49,8 +51,21 @@ public class User {
     @Column(name = "reset_token") // Ensure this matches your database column name
     private String resetToken;
 
-    @Column(name = "token_expiry") // Ensure this matches your database column name
+    @Column(name = "token_expiry")
     private Instant tokenExpiry;
+
+//    @ManyToMany(fetch = FetchType.EAGER)  // Fetch roles eagerly to load them with the user
+//    @JoinTable(
+//            name = "user_roles",  // Join table for the relationship
+//            joinColumns = @JoinColumn(name = "user_id"),  // Foreign key to User
+//            inverseJoinColumns = @JoinColumn(name = "role_id")  // Foreign key to Role
+//    )
+//    private Set<Role> roles = new HashSet<>();
+
+
+
+
+
 
     // Relationship with UserPurchaseHistory
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -140,5 +155,13 @@ public class User {
 
     public Instant getTokenExpiry() {
         return null;
+    }
+
+    public String getResetToken() {
+        return resetToken;
+    }
+
+
+    public void setRole(String user) {
     }
 }

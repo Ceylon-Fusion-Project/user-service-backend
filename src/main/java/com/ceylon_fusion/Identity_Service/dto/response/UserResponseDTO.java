@@ -1,6 +1,6 @@
 package com.ceylon_fusion.Identity_Service.dto.response;
 
-import com.ceylon_fusion.Identity_Service.entity.enums.Role;
+
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -13,15 +13,15 @@ public class UserResponseDTO {
     private Long userId; // Updated from 'id' to match User entity
     private String username;
     private String email;
-    private Role role;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public UserResponseDTO(Long id, String username, String email, Role role, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public UserResponseDTO(Long id, String username, String email, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.userId = id;
         this.username = username;
         this.email = email;
-        this.role = role;
+
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -50,13 +50,6 @@ public class UserResponseDTO {
         this.email = email;
     }
 
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
