@@ -30,19 +30,15 @@ public class User {
     private Long userId;
 
     @Column(name = "cf_id", nullable = false, unique = true)
-    private String cf_id;
+    private String cfId;
 
     @Column(name = "user_name",nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false, unique = true)
-    private String email;
 
-    @Column(name = "address", nullable = false)
-    private String address;
 
     @Column(name = "phone_number", nullable = false, unique = true)
-    private long phone_number;
+    private long phoneNumber;
 
     @Column(name="country" , nullable = false)
     private String country;
@@ -69,14 +65,52 @@ public class User {
     @Column(name = "token_expiry")
     private Instant tokenExpiry;
 
-//    @ManyToMany(fetch = FetchType.EAGER)  // Fetch roles eagerly to load them with the user
-//    @JoinTable(
-//            name = "user_roles",  // Join table for the relationship
-//            joinColumns = @JoinColumn(name = "user_id"),  // Foreign key to User
-//            inverseJoinColumns = @JoinColumn(name = "role_id")  // Foreign key to Role
-//    )
-//    private Set<Role> roles = new HashSet<>();
 
+public String getCf_id() {
+    return cfId;
+}
+
+    public void setCf_id(String cf_id) {
+        this.cfId = cf_id;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public long getPhone_number() {
+        return phoneNumber;
+    }
+
+    public void setPhone_number(long phone_number) {
+        this.phoneNumber = phone_number;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    @Column(name = "address", nullable = false)
+    private String address;
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
 
 
@@ -180,5 +214,12 @@ public class User {
 
 
     public void setRole(String user) {
+    }
+
+    public String getProfilePhotoPath() {
+        return String.valueOf(false);
+    }
+
+    public void setProfilePhotoPath(String fileName) {
     }
 }

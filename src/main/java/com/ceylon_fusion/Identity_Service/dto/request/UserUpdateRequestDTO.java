@@ -2,6 +2,9 @@ package com.ceylon_fusion.Identity_Service.dto.request;
 
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -36,5 +39,26 @@ public class UserUpdateRequestDTO {
 
     public void setRole(String role) {
         Role = role;
+    }
+
+    public void setProfilePhoto(MultipartFile profilePhoto) {
+    }
+
+    public String getAddress() {
+        return "";
+    }
+
+
+
+    public String getCountry() {
+        return "";
+    }
+
+    public MultipartFile getProfilePhoto() {
+        return null;
+    }
+
+    public String getPhoneNumber() {
+        return "";
     }
 }
