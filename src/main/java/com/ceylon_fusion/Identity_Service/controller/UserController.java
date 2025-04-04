@@ -5,19 +5,30 @@ import com.ceylon_fusion.Identity_Service.dto.response.UserBookingHistoryRespons
 import com.ceylon_fusion.Identity_Service.dto.response.UserPurchaseHistoryResponseDTO;
 import com.ceylon_fusion.Identity_Service.dto.response.UserRegistrationResponseDTO;
 import com.ceylon_fusion.Identity_Service.dto.response.UserResponseDTO;
+import com.ceylon_fusion.Identity_Service.entity.User;
 import com.ceylon_fusion.Identity_Service.exception.EmailAlreadyExistsException;
+import com.ceylon_fusion.Identity_Service.exception.ResourceNotFoundException;
 import com.ceylon_fusion.Identity_Service.service.UserBookingHistoryService;
 import com.ceylon_fusion.Identity_Service.service.UserPurchaseHistoryService;
 import com.ceylon_fusion.Identity_Service.service.UserService;
 import com.ceylon_fusion.Identity_Service.util.StandardResponse;
+import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -27,6 +38,8 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    @Value("${file.upload-dir}")
+    private String uploadDir;
 
     @Autowired
     private UserPurchaseHistoryService userPurchaseHistoryService;
@@ -78,21 +91,20 @@ public class UserController {
         return ResponseEntity.ok(new StandardResponse(200, "Password reset successfully.", null));
     }
 
-//    @PutMapping("/user/update-profile")
-//    public ResponseEntity<StandardResponse> updateUserProfile(
-//            @RequestParam Long id,
-//            @RequestPart("userData") UserUpdateRequestDTO requestDTO,
-//            @RequestPart(value = "profilePhoto", required = false) MultipartFile profilePhoto) {
-//
-//        // Set the profile photo if provided
-//        if (profilePhoto != null) {
-//            requestDTO.setProfilePhoto(profilePhoto);
-//        }
-//
-//        UserResponseDTO updatedUser = userService.updateUserProfile(id, requestDTO);
-//        return ResponseEntity.ok(new StandardResponse(200, "Profile updated successfully", updatedUser));
-//    }
+    @PutMapping("/update-profile")
+    public ResponseEntity<StandardResponse> updateUserProfile(
+            @RequestParam Long id,
+            @RequestPart("userData") UserUpdateRequestDTO requestDTO,
+            @RequestPart(value = "profilePhoto", required = false) MultipartFile profilePhoto) {
 
+        // Set the profile photo if provided
+        if (profilePhoto != null) {
+            requestDTO.setProfilePhoto(profilePhoto);
+        }
+
+        UserResponseDTO updatedUser = userService.updateUserProfile(id, requestDTO);
+        return ResponseEntity.ok(new StandardResponse(200, "Profile updated successfully", updatedUser));
+    }
     @GetMapping("/admin/get-by-id")
      //@PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<StandardResponse> getUserById(
@@ -168,7 +180,69 @@ public ResponseEntity<StandardResponse> updateUser(
         return userBookingHistoryService.getBookingHistoriesBasedOnRole(userId, role);
     }
 
+    @PutMapping("/update-by-id")
+    public ResponseEntity<StandardResponse> updateUserById(
+            @RequestParam Long id,
+            @RequestPart("userData") UserUpdateRequestDTO requestDTO,
+            @RequestPart(value = "profilePhoto", required = false) MultipartFile profilePhoto) {
 
+        if (profilePhoto != null) {
+            requestDTO.setProfilePhoto(profilePhoto);
+        }
+
+        UserResponseDTO updatedUser = userService.updateUserProfile(id, requestDTO);
+        return ResponseEntity.ok(new StandardResponse(200, "User updated successfully", updatedUser));
+    }
+
+    @PutMapping("/update-by-cfid")
+    public ResponseEntity<StandardResponse> updateUserByCfId(
+            @RequestParam String cfId,
+            @RequestPart("userData") UserUpdateRequestDTO requestDTO,
+            @RequestPart(value = "profilePhoto", required = false) MultipartFile profilePhoto) {
+
+        if (profilePhoto != null) {
+            requestDTO.setProfilePhoto(profilePhoto);
+        }
+
+        UserResponseDTO updatedUser = userService.updateUserProfileByCfId(cfId, requestDTO);
+        return ResponseEntity.ok(new StandardResponse(200, "User updated successfully", updatedUser));
+    }
+
+    @GetMapping("/profile-photo/{userId}")
+    public ResponseEntity<Resource> getProfilePhoto(@PathVariable Long userId) throws MalformedURLException {
+        UserResponseDTO user = userService.getUserById(userId);
+
+        // Correct null check for profile photo path
+        if (user.getProfilePhotoPath() == null || user.getProfilePhotoPath().isEmpty()) {
+            throw new ResourceNotFoundException("No profile photo found");
+        }
+
+        // Use the configured upload directory
+        Path filePath = Paths.get(uploadDir).resolve(user.getProfilePhotoPath()).normalize();
+
+        // Verify the file exists
+        if (!Files.exists(filePath)) {
+            throw new ResourceNotFoundException("Profile photo file not found");
+        }
+
+        UrlResource resource = new UrlResource(filePath.toUri());
+
+        // Determine content type dynamically
+        String contentType = determineContentType(user.getProfilePhotoPath());
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .body((Resource) resource);
+    }
+
+    private String determineContentType(String filename) {
+        if (filename.toLowerCase().endsWith(".png")) {
+            return "image/png";
+        } else if (filename.toLowerCase().endsWith(".jpg") || filename.toLowerCase().endsWith(".jpeg")) {
+            return "image/jpeg";
+        }
+        return "application/octet-stream";
+    }
 
 
     }

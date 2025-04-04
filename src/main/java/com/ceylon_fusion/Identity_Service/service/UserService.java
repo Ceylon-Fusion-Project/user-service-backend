@@ -19,6 +19,8 @@ public interface UserService {
 
     UserRegistrationResponseDTO loginUser(@Valid UserLoginRequestDTO requestDTO);
 
+    UserResponseDTO updateUserProfileByCfId(String cfId, UserUpdateRequestDTO requestDTO);
+
     UserResponseDTO getUserById(Long id);
 
     UserResponseDTO updateUser(Long id, UserUpdateRequestDTO requestDTO);
@@ -28,5 +30,7 @@ public interface UserService {
     String forgotPassword(String email);
 
     void resetPassword(String token, @Valid ResetPasswordRequestDTO requestDTO);
+
+    UserResponseDTO updateUserProfile(Long id, UserUpdateRequestDTO requestDTO);
 
 }
