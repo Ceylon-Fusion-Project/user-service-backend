@@ -91,20 +91,9 @@ public class UserController {
         return ResponseEntity.ok(new StandardResponse(200, "Password reset successfully.", null));
     }
 
-    @PutMapping("/update-profile")
-    public ResponseEntity<StandardResponse> updateUserProfile(
-            @RequestParam Long id,
-            @RequestPart("userData") UserUpdateRequestDTO requestDTO,
-            @RequestPart(value = "profilePhoto", required = false) MultipartFile profilePhoto) {
 
-        // Set the profile photo if provided
-        if (profilePhoto != null) {
-            requestDTO.setProfilePhoto(profilePhoto);
-        }
 
-        UserResponseDTO updatedUser = userService.updateUserProfile(id, requestDTO);
-        return ResponseEntity.ok(new StandardResponse(200, "Profile updated successfully", updatedUser));
-    }
+
     @GetMapping("/admin/get-by-id")
      //@PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<StandardResponse> getUserById(
@@ -113,15 +102,7 @@ public class UserController {
         return ResponseEntity.ok(new StandardResponse(200, "User retrieved successfully", user));
     }
 
-@PutMapping("/admin/update-by-id")
-//  @PreAuthorize("hasAuthority('ADMIN')")
-public ResponseEntity<StandardResponse> updateUser(
-        @RequestParam Long id,
-        @RequestBody UserUpdateRequestDTO requestDTO)
-{
-    UserResponseDTO updatedUser = userService.updateUser(id, requestDTO);
-    return ResponseEntity.ok(new StandardResponse(200, "User updated successfully", updatedUser));
-}
+
 
 
     @DeleteMapping("/admin/delete-by-id")
@@ -180,69 +161,30 @@ public ResponseEntity<StandardResponse> updateUser(
         return userBookingHistoryService.getBookingHistoriesBasedOnRole(userId, role);
     }
 
-    @PutMapping("/update-by-id")
-    public ResponseEntity<StandardResponse> updateUserById(
-            @RequestParam Long id,
-            @RequestPart("userData") UserUpdateRequestDTO requestDTO,
-            @RequestPart(value = "profilePhoto", required = false) MultipartFile profilePhoto) {
 
-        if (profilePhoto != null) {
-            requestDTO.setProfilePhoto(profilePhoto);
-        }
 
-        UserResponseDTO updatedUser = userService.updateUserProfile(id, requestDTO);
-        return ResponseEntity.ok(new StandardResponse(200, "User updated successfully", updatedUser));
+
+@PutMapping("/update-profile")
+public ResponseEntity<StandardResponse> updateUserProfile(
+        @RequestParam(required = false) Long userId,
+        @RequestParam(required = false) String cfId,
+        @RequestBody UserUpdateRequestDTO requestDTO) {
+
+    if (userId == null && cfId == null) {
+        throw new IllegalArgumentException("Either userId or cfId must be provided");
     }
 
-    @PutMapping("/update-by-cfid")
-    public ResponseEntity<StandardResponse> updateUserByCfId(
-            @RequestParam String cfId,
-            @RequestPart("userData") UserUpdateRequestDTO requestDTO,
-            @RequestPart(value = "profilePhoto", required = false) MultipartFile profilePhoto) {
-
-        if (profilePhoto != null) {
-            requestDTO.setProfilePhoto(profilePhoto);
-        }
-
-        UserResponseDTO updatedUser = userService.updateUserProfileByCfId(cfId, requestDTO);
-        return ResponseEntity.ok(new StandardResponse(200, "User updated successfully", updatedUser));
+    UserResponseDTO updatedUser;
+    if (userId != null) {
+        updatedUser = userService.updateUserProfile(userId, requestDTO);
+    } else {
+        updatedUser = userService.updateUserProfileByCfId(cfId, requestDTO);
     }
 
-    @GetMapping("/profile-photo/{userId}")
-    public ResponseEntity<Resource> getProfilePhoto(@PathVariable Long userId) throws MalformedURLException {
-        UserResponseDTO user = userService.getUserById(userId);
+    return ResponseEntity.ok(new StandardResponse(200, "User updated successfully", updatedUser));
+}
 
-        // Correct null check for profile photo path
-        if (user.getProfilePhotoPath() == null || user.getProfilePhotoPath().isEmpty()) {
-            throw new ResourceNotFoundException("No profile photo found");
-        }
 
-        // Use the configured upload directory
-        Path filePath = Paths.get(uploadDir).resolve(user.getProfilePhotoPath()).normalize();
-
-        // Verify the file exists
-        if (!Files.exists(filePath)) {
-            throw new ResourceNotFoundException("Profile photo file not found");
-        }
-
-        UrlResource resource = new UrlResource(filePath.toUri());
-
-        // Determine content type dynamically
-        String contentType = determineContentType(user.getProfilePhotoPath());
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .body((Resource) resource);
-    }
-
-    private String determineContentType(String filename) {
-        if (filename.toLowerCase().endsWith(".png")) {
-            return "image/png";
-        } else if (filename.toLowerCase().endsWith(".jpg") || filename.toLowerCase().endsWith(".jpeg")) {
-            return "image/jpeg";
-        }
-        return "application/octet-stream";
-    }
 
 
     }

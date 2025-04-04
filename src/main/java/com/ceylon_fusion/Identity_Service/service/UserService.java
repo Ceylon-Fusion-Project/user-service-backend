@@ -18,12 +18,11 @@ public interface UserService {
    // UserRegistrationResponseDTO loginUser(UserLoginRequestDTO requestDTO);
 
     UserRegistrationResponseDTO loginUser(@Valid UserLoginRequestDTO requestDTO);
-
-    UserResponseDTO updateUserProfileByCfId(String cfId, UserUpdateRequestDTO requestDTO);
+//
 
     UserResponseDTO getUserById(Long id);
 
-    UserResponseDTO updateUser(Long id, UserUpdateRequestDTO requestDTO);
+//    UserResponseDTO updateUser(Long id, UserUpdateRequestDTO requestDTO);
 
     void deleteUser(Long id);
 
@@ -31,6 +30,7 @@ public interface UserService {
 
     void resetPassword(String token, @Valid ResetPasswordRequestDTO requestDTO);
 
-    UserResponseDTO updateUserProfile(Long id, UserUpdateRequestDTO requestDTO);
+    UserResponseDTO updateUserProfile(Long userId, UserUpdateRequestDTO requestDTO);
 
+    UserResponseDTO updateUserProfileByCfId(String cfId, UserUpdateRequestDTO requestDTO);
 }
