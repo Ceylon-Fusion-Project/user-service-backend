@@ -134,6 +134,17 @@ public class UserServiceIMPL implements UserService {
         user.setTokenExpiry(null); // Clear the expiry
         userRepo.save(user);
     }
+
+    @Override
+    public UserResponseDTO updateUserProfile(Long userId, UserUpdateRequestDTO requestDTO) {
+        return null;
+    }
+
+    @Override
+    public UserResponseDTO updateUserProfileByCfId(String cfId, UserUpdateRequestDTO requestDTO) {
+        return null;
+    }
+
     @Override
     public UserResponseDTO getUserById(Long id) {
         User user = userRepo.findById(id)
@@ -149,28 +160,7 @@ public class UserServiceIMPL implements UserService {
         );
     }
 
-    @Override
-    public UserResponseDTO updateUser(Long id, UserUpdateRequestDTO requestDTO) {
-        User user = userRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
 
-        // Update user details
-        user.setUsername(requestDTO.getUsername());
-        user.setEmail(requestDTO.getEmail());
-        user.setUpdatedAt(LocalDateTime.now());
-
-        // Save updated user
-        User updatedUser = userRepo.save(user);
-
-        return new UserResponseDTO(
-                updatedUser.getUserId(), // Maps the database userId to the DTO id
-                updatedUser.getUsername(),
-                updatedUser.getEmail(),
-
-                updatedUser.getCreatedAt(),
-                updatedUser.getUpdatedAt()
-        );
-    }
 
     @Override
     public void deleteUser(Long id) {
@@ -181,93 +171,6 @@ public class UserServiceIMPL implements UserService {
         userRepo.delete(user);
     }
 
-
-
-    @Override
-    public UserResponseDTO updateUserProfile(Long id, UserUpdateRequestDTO requestDTO) {
-        User user = userRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
-
-        return updateUserProfile(user, requestDTO);
-    }
-
-    @Override
-    public UserResponseDTO updateUserProfileByCfId(String cfId, UserUpdateRequestDTO requestDTO) {
-        // Find user by CF_ID - get the User object, not Long
-        User user = userRepo.findByCfId(cfId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with CF ID: " + cfId));
-
-        return updateUserProfile(user, requestDTO);
-    }
-
-    private UserResponseDTO updateUserProfile(User user, UserUpdateRequestDTO requestDTO) {
-        // Update basic fields if provided
-        if (requestDTO.getUsername() != null && !requestDTO.getUsername().isEmpty()) {
-            if (!user.getUsername().equals(requestDTO.getUsername()) &&
-                    userRepo.existsByUsername(requestDTO.getUsername())) {
-                throw new IllegalArgumentException("Username already exists");
-            }
-            user.setUsername(requestDTO.getUsername());
-        }
-
-        if (requestDTO.getEmail() != null && !requestDTO.getEmail().isEmpty()) {
-            if (!user.getEmail().equals(requestDTO.getEmail()) &&
-                    userRepo.existsByEmail(requestDTO.getEmail())) {
-                throw new IllegalArgumentException("Email already exists");
-            }
-            user.setEmail(requestDTO.getEmail());
-        }
-
-        if (requestDTO.getAddress() != null) {
-            user.setAddress(requestDTO.getAddress());
-        }
-
-        // In UserServiceIMPL.java
-        if (requestDTO.getPhoneNumber() != null) {
-            // Correct way to remove non-numeric characters from phone number
-            String numericPhone = requestDTO.getPhoneNumber().replaceAll("[^0-9]", "");
-            long phoneNumber = Long.parseLong(numericPhone);
-
-            if (user.getPhone_number() != phoneNumber &&
-                    userRepo.existsByPhoneNumber(phoneNumber)) {
-                throw new IllegalArgumentException("Phone number already exists");
-            }
-            user.setPhone_number(phoneNumber);
-        }
-
-        if (requestDTO.getCountry() != null) {
-            user.setCountry(requestDTO.getCountry());
-        }
-
-
-        if (requestDTO.getRole() != null) {
-            user.setRole(Role.valueOf(requestDTO.getRole().toUpperCase()));
-        }
-
-        // Handle profile photo upload
-        if (requestDTO.getProfilePhoto() != null && !requestDTO.getProfilePhoto().isEmpty()) {
-            // Delete old photo if exists
-            if (user.getProfilePhotoPath() != null) {
-                try {
-                    Path oldPhotoPath = Paths.get(uploadDir, user.getProfilePhotoPath());
-                    Files.deleteIfExists(oldPhotoPath);
-                } catch (IOException e) {
-                    // Log warning but continue with new photo upload
-                }
-            }
-
-            String fileName = storeProfilePhoto(requestDTO.getProfilePhoto(), user.getCf_id());
-            user.setProfilePhotoPath(fileName);
-        }
-
-        // Update timestamp
-        user.setUpdatedAt(LocalDateTime.now());
-
-        // Save changes
-        User updatedUser = userRepo.save(user);
-
-        return convertToResponseDTO(updatedUser);
-    }
 
     private String storeProfilePhoto(MultipartFile file, String cfId) {
         try {
@@ -313,7 +216,40 @@ public class UserServiceIMPL implements UserService {
         return responseDTO;
     }
 
+    private UserResponseDTO updateProfile(User user, UserUpdateRequestDTO requestDTO) {
+        // Update basic fields
+        if (requestDTO.getUsername() != null) {
+            user.setUsername(requestDTO.getUsername());
+        }
+        if (requestDTO.getEmail() != null) {
+            user.setEmail(requestDTO.getEmail());
+        }
+        if (requestDTO.getCountry() != null) {
+            user.setCountry(requestDTO.getCountry());
+        }
+        if (requestDTO.getRole() != null) {
+            user.setRole(Role.valueOf(requestDTO.getRole().toUpperCase()));
+        }
+        if (requestDTO.getPhoneNumber() != null) {
+            try {
+                // Remove all non-digit characters and parse to long
+                String numericPhone = requestDTO.getPhoneNumber().replaceAll("[^0-9]", "");
+                user.setPhone_number(Long.parseLong(numericPhone));
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid phone number format");
+            }
+        }
 
+        // Handle profile photo
+        if (requestDTO.getProfilePhoto() != null && !requestDTO.getProfilePhoto().isEmpty()) {
+            String fileName = storeProfilePhoto(requestDTO.getProfilePhoto(), user.getCf_id());
+            user.setProfilePhotoPath(fileName);
+        }
+
+        user.setUpdatedAt(LocalDateTime.now());
+        User updatedUser = userRepo.save(user);
+        return convertToResponseDTO(updatedUser);
+    }
 
 }
 
