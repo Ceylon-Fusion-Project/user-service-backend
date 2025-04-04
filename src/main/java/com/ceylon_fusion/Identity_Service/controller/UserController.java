@@ -91,20 +91,7 @@ public class UserController {
         return ResponseEntity.ok(new StandardResponse(200, "Password reset successfully.", null));
     }
 
-//    @PutMapping("/update-profile")
-//    public ResponseEntity<StandardResponse> updateUserProfile(
-//            @RequestParam Long id,
-//            @RequestPart("userData") UserUpdateRequestDTO requestDTO,
-//            @RequestPart(value = "profilePhoto", required = false) MultipartFile profilePhoto) {
-//
-//        // Set the profile photo if provided
-//        if (profilePhoto != null) {
-//            requestDTO.setProfilePhoto(profilePhoto);
-//        }
-//
-//        UserResponseDTO updatedUser = userService.updateUserProfile(id, requestDTO);
-//        return ResponseEntity.ok(new StandardResponse(200, "Profile updated successfully", updatedUser));
-//    }
+
 
 
     @GetMapping("/admin/get-by-id")
