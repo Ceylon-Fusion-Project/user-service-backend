@@ -14,7 +14,11 @@ import com.ceylon_fusion.Identity_Service.exception.UsernameAlreadyExistsExcepti
 import com.ceylon_fusion.Identity_Service.repo.UserRepo;
 import com.ceylon_fusion.Identity_Service.service.UserService;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.bridge.MessageUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -29,10 +33,11 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.chrono.ChronoLocalDateTime;
 import java.util.UUID;
 
 @Service
-
+@Transactional
 public class UserServiceIMPL implements UserService {
 
     @Autowired
@@ -45,43 +50,64 @@ public class UserServiceIMPL implements UserService {
     public UserServiceIMPL(UserRepo userRepo) {
         this.userRepo = userRepo;
     }
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceIMPL.class);
+
 
     @Override
     public UserRegistrationResponseDTO registerUser(UserRegistrationRequestDTO requestDTO) {
-        if (userRepo.existsByUsername(requestDTO.getUsername())) {
-            throw new UsernameAlreadyExistsException("The username is already taken. Please try another one.");
+        try {
+            if (requestDTO.getEmail() == null || requestDTO.getEmail().isBlank()) {
+                throw new IllegalArgumentException("Email cannot be null or empty");
+            }
+            // Existing validation checks
+            if (userRepo.existsByUsername(requestDTO.getUsername())) {
+                throw new UsernameAlreadyExistsException("Username already taken");
+            }
+            if (userRepo.existsByEmail(requestDTO.getEmail())) {
+                throw new EmailAlreadyExistsException("Email already registered");
+            }
+            if (userRepo.existsByPhoneNumber(requestDTO.getPhoneNumber())) {
+                throw new IllegalArgumentException("Phone number already in use");
+            }
+
+            // Create and populate user
+            User user = new User();
+            user.setUsername(requestDTO.getUsername());
+            user.setEmail(requestDTO.getEmail());
+            user.setPhoneNumber(requestDTO.getPhoneNumber());
+            user.setCfId(requestDTO.getCfId());
+            user.setCountry(requestDTO.getCountry());
+            user.setAddress(requestDTO.getAddress());
+            user.setCurrency(requestDTO.getCurrency());
+            user.setCity(requestDTO.getCity());
+            user.setState(requestDTO.getState());
+            user.setZipCode(requestDTO.getZipCode());
+            user.setRole(requestDTO.getRole());
+
+            // Set default empty password (since auth is handled by Keycloak)
+            user.setPassword("");
+
+            // Set timestamps
+            user.setCreatedAt(LocalDateTime.now());
+            user.setUpdatedAt(LocalDateTime.now());
+
+            // Save user
+            User savedUser = userRepo.save(user);
+
+            return new UserRegistrationResponseDTO(
+                    savedUser.getUserId(),
+                    savedUser.getUsername(),
+                    savedUser.getEmail(),
+                    savedUser.getRole(),
+                    savedUser.getCreatedAt(),
+                    savedUser.getUpdatedAt()
+            );
+        } catch (Exception e) {
+            // Add proper logging
+            logger.error("Registration failed: {}", e.getMessage());
+            throw e; // Re-throw to be handled by controller
         }
-        // Check if the email already exists
-        if (userRepo.existsByEmail(requestDTO.getEmail())) {
-            throw new EmailAlreadyExistsException("The email is already registered. Please use a different email.");
-        }
-
-        // Create and save the user entity
-        User user = new User();
-        user.setUsername(requestDTO.getUsername());
-        user.setEmail(requestDTO.getEmail());
-
-
-        user.setRole(requestDTO.getRole()); // Directly set role
-        user.setCreatedAt(LocalDateTime.now());
-        user.setUpdatedAt(LocalDateTime.now());
-
-        // Save the user to the database
-        User savedUser = userRepo.save(user);
-
-        // Map user entity to response DTO
-        return new UserRegistrationResponseDTO(
-                savedUser.getUserId(),
-                savedUser.getUsername(),
-                savedUser.getEmail(),
-                savedUser.getRole(),
-                savedUser.getCreatedAt(),
-                savedUser.getUpdatedAt()
-
-        );
     }
-
-
     @Override
     public UserRegistrationResponseDTO loginUser(UserLoginRequestDTO requestDTO) {
         // Validate email and password
@@ -124,7 +150,7 @@ public class UserServiceIMPL implements UserService {
         User user = userRepo.findByResetToken(token)
                 .orElseThrow(() -> new RuntimeException("Invalid or expired password reset token."));
 
-        if (user.getTokenExpiry().isBefore(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant())) {
+        if (user.getTokenExpiry().isBefore(ChronoLocalDateTime.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()))) {
             throw new RuntimeException("Password reset token has expired.");
         }
 
@@ -195,61 +221,60 @@ public class UserServiceIMPL implements UserService {
         }
     }
 
-    private UserResponseDTO convertToResponseDTO(User user) {
-        UserResponseDTO responseDTO = new UserResponseDTO(
-                user.getUserId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getCreatedAt(),
-                user.getUpdatedAt()
-        );
+//    private UserResponseDTO convertToResponseDTO(User user) {
+//        UserResponseDTO responseDTO = new UserResponseDTO(
+//                user.getUserId(),
+//                user.getUsername(),
+//                user.getEmail(),
+//                user.getCreatedAt(),
+//                user.getUpdatedAt()
+//        );
+//
+//        // Set additional fields
+//        responseDTO.setCfId(user.getCf_id());
+//        responseDTO.setAddress(user.getAddress());
+//        responseDTO.setPhoneNumber(String.valueOf(user.getPhone_number()));
+//        responseDTO.setCountry(user.getCountry());
+//        responseDTO.setRole(user.getRole().name());
+//        responseDTO.setProfilePhotoUrl(user.getProfilePhotoPath() != null ?
+//                "/api/v1/users/profile-photo/" + user.getUserId() : null);
+//
+//        return responseDTO;
+//    }
 
-        // Set additional fields
-        responseDTO.setCfId(user.getCf_id());
-        responseDTO.setAddress(user.getAddress());
-        responseDTO.setPhoneNumber(String.valueOf(user.getPhone_number()));
-        responseDTO.setCountry(user.getCountry());
-        responseDTO.setRole(user.getRole().name());
-        responseDTO.setProfilePhotoUrl(user.getProfilePhotoPath() != null ?
-                "/api/v1/users/profile-photo/" + user.getUserId() : null);
-
-        return responseDTO;
-    }
-
-    private UserResponseDTO updateProfile(User user, UserUpdateRequestDTO requestDTO) {
-        // Update basic fields
-        if (requestDTO.getUsername() != null) {
-            user.setUsername(requestDTO.getUsername());
-        }
-        if (requestDTO.getEmail() != null) {
-            user.setEmail(requestDTO.getEmail());
-        }
-        if (requestDTO.getCountry() != null) {
-            user.setCountry(requestDTO.getCountry());
-        }
-        if (requestDTO.getRole() != null) {
-            user.setRole(Role.valueOf(requestDTO.getRole().toUpperCase()));
-        }
-        if (requestDTO.getPhoneNumber() != null) {
-            try {
-                // Remove all non-digit characters and parse to long
-                String numericPhone = requestDTO.getPhoneNumber().replaceAll("[^0-9]", "");
-                user.setPhone_number(Long.parseLong(numericPhone));
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("Invalid phone number format");
-            }
-        }
-
-        // Handle profile photo
-        if (requestDTO.getProfilePhoto() != null && !requestDTO.getProfilePhoto().isEmpty()) {
-            String fileName = storeProfilePhoto(requestDTO.getProfilePhoto(), user.getCf_id());
-            user.setProfilePhotoPath(fileName);
-        }
-
-        user.setUpdatedAt(LocalDateTime.now());
-        User updatedUser = userRepo.save(user);
-        return convertToResponseDTO(updatedUser);
-    }
+//    private UserResponseDTO updateProfile(User user, UserUpdateRequestDTO requestDTO) {
+//        // Update basic fields
+//        if (requestDTO.getUsername() != null) {
+//            user.setUsername(requestDTO.getUsername());
+//        }
+//        if (requestDTO.getEmail() != null) {
+//            user.setEmail(requestDTO.getEmail());
+//        }
+//        if (requestDTO.getCountry() != null) {
+//            user.setCountry(requestDTO.getCountry());
+//        }
+//        if (requestDTO.getRole() != null) {
+//            user.setRole(Role.valueOf(requestDTO.getRole().toUpperCase()));
+//        }
+//        if (requestDTO.getPhoneNumber() != null) {
+//            try {
+//                // Remove all non-digit characters and parse to long
+//                String numericPhone = requestDTO.getPhoneNumber().replaceAll("[^0-9]", "");
+//                user.setPhone_number(String.valueOf(numericPhone));
+//            } catch (NumberFormatException e) {
+//                throw new IllegalArgumentException("Invalid phone number format");
+//            }
+//        }
+//
+//        // Handle profile photo
+//        if (requestDTO.getProfilePhoto() != null && !requestDTO.getProfilePhoto().isEmpty()) {
+//            String fileName = storeProfilePhoto(requestDTO.getProfilePhoto(), user.getCf_id());
+//            user.setProfilePhotoPath(fileName);
+//        }
+//
+//        user.setUpdatedAt(LocalDateTime.now());
+//        User updatedUser = userRepo.save(user);
+//        return convertToResponseDTO(updatedUser);
+//    }
 
 }
-

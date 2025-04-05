@@ -8,12 +8,16 @@ import com.ceylon_fusion.Identity_Service.dto.response.UserResponseDTO;
 import com.ceylon_fusion.Identity_Service.entity.User;
 import com.ceylon_fusion.Identity_Service.exception.EmailAlreadyExistsException;
 import com.ceylon_fusion.Identity_Service.exception.ResourceNotFoundException;
+import com.ceylon_fusion.Identity_Service.exception.UsernameAlreadyExistsException;
 import com.ceylon_fusion.Identity_Service.service.UserBookingHistoryService;
 import com.ceylon_fusion.Identity_Service.service.UserPurchaseHistoryService;
 import com.ceylon_fusion.Identity_Service.service.UserService;
 import com.ceylon_fusion.Identity_Service.util.StandardResponse;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import org.aspectj.bridge.MessageUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
@@ -47,26 +51,32 @@ public class UserController {
     @Autowired
     private UserBookingHistoryService userBookingHistoryService;
 
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+
+
     @PostMapping("/register")
-    public ResponseEntity<StandardResponse> registerUser(@RequestBody @Valid UserRegistrationRequestDTO requestDTO) {
+    public ResponseEntity<StandardResponse> registerUser(
+            @RequestBody @Valid UserRegistrationRequestDTO requestDTO) {
         try {
-            // Call service to handle registration logic
+            logger.info("Attempting to register user: {}", requestDTO.getUsername());
             UserRegistrationResponseDTO response = userService.registerUser(requestDTO);
-
-            // Return success response
+            logger.info("User registered successfully: {}", requestDTO.getUsername());
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new StandardResponse(201, "User Registered Successfully", response));
-        } catch (EmailAlreadyExistsException e) {
-            // Handle duplicate email exception
+                    .body(new StandardResponse(201, "User registered successfully", response));
+        } catch (UsernameAlreadyExistsException e) {
+            logger.warn("Registration failed - username exists: {}", requestDTO.getUsername());
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new StandardResponse(409, "Email is already in use.", null));
+                    .body(new StandardResponse(409, e.getMessage(), null));
+        } catch (EmailAlreadyExistsException e) {
+            logger.warn("Registration failed - email exists: {}", requestDTO.getEmail());
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new StandardResponse(409, e.getMessage(), null));
         } catch (Exception e) {
-            // Handle unexpected errors
+            logger.error("Registration failed for user {}: {}", requestDTO.getUsername(), e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new StandardResponse(500, "An unexpected error occurred.", null));
-        }}
-
-
+                    .body(new StandardResponse(500, "Registration failed: " + e.getMessage(), null));
+        }
+    }
     @PostMapping("/login")
     public ResponseEntity<StandardResponse> loginUser(
             @Valid @RequestBody UserLoginRequestDTO requestDTO)

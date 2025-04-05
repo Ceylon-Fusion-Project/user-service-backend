@@ -38,7 +38,7 @@ public class User {
 
 
     @Column(name = "phone_number", nullable = false, unique = true)
-    private long phoneNumber;
+    private String phoneNumber;
 
     @Column(name="country" , nullable = false)
     private String country;
@@ -46,8 +46,11 @@ public class User {
     @Column(name="currency"     , nullable = false)
     private String currency;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
+
+    @Column(nullable = false, unique = true)  // Must be non-null
+    private String email;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING) // Store as a string in the database
@@ -63,28 +66,61 @@ public class User {
     private String resetToken;
 
     @Column(name = "token_expiry")
-    private Instant tokenExpiry;
+    private LocalDateTime tokenExpiry;
 
 
-public String getCf_id() {
-    return cfId;
-}
+    // Relationship with UserPurchaseHistory
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserPurchaseHistory> purchaseHistories;
 
-    public void setCf_id(String cf_id) {
-        this.cfId = cf_id;
+    // Relationship with UserBookingHistory
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserBookingHistory> bookingHistories;
+
+
+
+    public List<UserPurchaseHistory> getPurchaseHistories() {
+        return purchaseHistories;
     }
 
-    public String getAddress() {
-        return address;
+    public void setPurchaseHistories(List<UserPurchaseHistory> purchaseHistories) {
+        this.purchaseHistories = purchaseHistories;
     }
 
-    public long getPhone_number() {
-        return phoneNumber;
+    public List<UserBookingHistory> getBookingHistories() {
+        return bookingHistories;
     }
 
-    public void setPhone_number(long phone_number) {
-        this.phoneNumber = phone_number;
+    public void setBookingHistories(List<UserBookingHistory> bookingHistories) {
+        this.bookingHistories = bookingHistories;
     }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getCfId() {
+        return cfId;
+    }
+
+    public void setCfId(String cfId) {
+        this.cfId = cfId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+
+
 
     public String getCountry() {
         return country;
@@ -100,53 +136,6 @@ public String getCf_id() {
 
     public void setCurrency(String currency) {
         this.currency = currency;
-    }
-
-    @Column(nullable = false, unique = true)
-    private String email;
-
-    @Column(name = "address", nullable = false)
-    private String address;
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-
-
-
-
-    // Relationship with UserPurchaseHistory
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserPurchaseHistory> purchaseHistories;
-
-    // Relationship with UserBookingHistory
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserBookingHistory> bookingHistories;
-
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getPassword() {
@@ -165,7 +154,6 @@ public String getCf_id() {
         this.role = role;
     }
 
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -182,43 +170,64 @@ public String getCf_id() {
         this.updatedAt = updatedAt;
     }
 
-    public List<UserPurchaseHistory> getPurchaseHistories() {
-        return purchaseHistories;
-    }
-
-    public void setPurchaseHistories(List<UserPurchaseHistory> purchaseHistories) {
-        this.purchaseHistories = purchaseHistories;
-    }
-
-    public List<UserBookingHistory> getBookingHistories() {
-        return bookingHistories;
-    }
-
-    public void setBookingHistories(List<UserBookingHistory> bookingHistories) {
-        this.bookingHistories = bookingHistories;
-    }
-
-    public void setResetToken(String resetToken) {
-    }
-
-    public void setTokenExpiry(LocalDateTime localDateTime) {
-    }
-
-    public Instant getTokenExpiry() {
-        return null;
-    }
-
     public String getResetToken() {
         return resetToken;
     }
 
-
-    public void setRole(String user) {
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
     }
+
+    public LocalDateTime getTokenExpiry() {
+        return tokenExpiry;
+    }
+
+    public void setTokenExpiry(LocalDateTime tokenExpiry) {
+        this.tokenExpiry = tokenExpiry;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setAddress(String address) {
+    }
+
+    public void setCity(String city) {
+    }
+
+    public void setState(String state) {
+    }
+
+    public void setZipCode(String zipCode) {
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getCf_id() {
+        return "";
+    }
+
+    public String getAddress() {
+        return "";
+    }
+
+
 
     public String getProfilePhotoPath() {
-        return String.valueOf(false);
+        return "";
     }
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    // And ensure you have this getter:
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
 
     public void setProfilePhotoPath(String fileName) {
     }

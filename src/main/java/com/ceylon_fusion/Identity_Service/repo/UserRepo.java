@@ -25,5 +25,5 @@ public interface UserRepo extends JpaRepository<User, Long> {
     Optional<User> findByCfId(String cfId);
 
 
-    boolean existsByPhoneNumber(long phoneNumber);
+    boolean existsByPhoneNumber(String phoneNumber);
 }
