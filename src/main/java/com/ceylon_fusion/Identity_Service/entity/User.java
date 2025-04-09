@@ -69,6 +69,8 @@ public class User {
     private LocalDateTime tokenExpiry;
 
 
+
+
     // Relationship with UserPurchaseHistory
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserPurchaseHistory> purchaseHistories;

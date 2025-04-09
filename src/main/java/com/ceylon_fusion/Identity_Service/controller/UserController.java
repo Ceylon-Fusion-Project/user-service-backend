@@ -1,10 +1,7 @@
 package com.ceylon_fusion.Identity_Service.controller;
 
 import com.ceylon_fusion.Identity_Service.dto.request.*;
-import com.ceylon_fusion.Identity_Service.dto.response.UserBookingHistoryResponseDTO;
-import com.ceylon_fusion.Identity_Service.dto.response.UserPurchaseHistoryResponseDTO;
-import com.ceylon_fusion.Identity_Service.dto.response.UserRegistrationResponseDTO;
-import com.ceylon_fusion.Identity_Service.dto.response.UserResponseDTO;
+import com.ceylon_fusion.Identity_Service.dto.response.*;
 import com.ceylon_fusion.Identity_Service.entity.User;
 import com.ceylon_fusion.Identity_Service.exception.EmailAlreadyExistsException;
 import com.ceylon_fusion.Identity_Service.exception.ResourceNotFoundException;
@@ -194,7 +191,10 @@ public ResponseEntity<StandardResponse> updateUserProfile(
     return ResponseEntity.ok(new StandardResponse(200, "User updated successfully", updatedUser));
 }
 
-
-
-
+    @GetMapping("/get-by-cfid")
+    public ResponseEntity<StandardResponse> getUserByCfId(@RequestParam String cfId) {
+        UserResponseDTO user = userService.getUserByCfId(cfId);
+        return ResponseEntity.ok(new StandardResponse(200, "User retrieved successfully by cfId", user));
     }
+
+}

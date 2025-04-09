@@ -7,7 +7,6 @@ import com.ceylon_fusion.Identity_Service.dto.request.UserUpdateRequestDTO;
 import com.ceylon_fusion.Identity_Service.dto.response.UserRegistrationResponseDTO;
 import com.ceylon_fusion.Identity_Service.dto.response.UserResponseDTO;
 import com.ceylon_fusion.Identity_Service.entity.User;
-import com.ceylon_fusion.Identity_Service.entity.enums.Role;
 import com.ceylon_fusion.Identity_Service.exception.EmailAlreadyExistsException;
 import com.ceylon_fusion.Identity_Service.exception.ResourceNotFoundException;
 import com.ceylon_fusion.Identity_Service.exception.UsernameAlreadyExistsException;
@@ -15,8 +14,6 @@ import com.ceylon_fusion.Identity_Service.repo.UserRepo;
 import com.ceylon_fusion.Identity_Service.service.UserService;
 
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.aspectj.bridge.MessageUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -170,6 +167,21 @@ public class UserServiceIMPL implements UserService {
     public UserResponseDTO updateUserProfileByCfId(String cfId, UserUpdateRequestDTO requestDTO) {
         return null;
     }
+
+    @Override
+    public UserResponseDTO getUserByCfId(String cfId) {
+        User user = userRepo.findByCfId(cfId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with cfId: " + cfId));
+
+        return new UserResponseDTO(
+                user.getUserId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getCreatedAt(),
+                user.getUpdatedAt()
+        );
+    }
+
 
     @Override
     public UserResponseDTO getUserById(Long id) {

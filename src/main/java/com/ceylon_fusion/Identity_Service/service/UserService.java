@@ -33,4 +33,6 @@ public interface UserService {
     UserResponseDTO updateUserProfile(Long userId, UserUpdateRequestDTO requestDTO);
 
     UserResponseDTO updateUserProfileByCfId(String cfId, UserUpdateRequestDTO requestDTO);
+
+    UserResponseDTO getUserByCfId(String cfId);
 }
