@@ -13,6 +13,7 @@ import org.aspectj.bridge.ISourceLocation;
 
 import java.util.List;
 
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -79,9 +80,18 @@ public class UserRegistrationRequestDTO {
     public void setZipCode(String zipCode) {
         this.zipCode = zipCode;
     }
+  
+    public List<String> getPreferredCategories() {
+        return preferredCategories;
+    }
 
     public void setPreferredCategories(List<String> preferredCategories) {
         this.preferredCategories = preferredCategories;
+    }
+
+    public String getCity() {
+        return city;
+
     }
 
     public void setCity(String city) {

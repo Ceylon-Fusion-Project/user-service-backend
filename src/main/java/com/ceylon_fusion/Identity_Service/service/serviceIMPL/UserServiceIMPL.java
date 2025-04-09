@@ -158,6 +158,21 @@ public class UserServiceIMPL implements UserService {
         userRepo.save(user);
     }
 
+//    @Override
+//    public UserResponseDTO updateUserProfile(Long id, UserUpdateRequestDTO requestDTO) {
+//        User user = userRepo.findById(id)
+//                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+//
+//        // Update user details
+//        if(requestDTO.getUsername() != null) {
+//            user.setUsername(requestDTO.getUsername());
+//        }
+//        if(requestDTO.getEmail() != null) {
+//            user.setEmail(requestDTO.getEmail());
+//        }
+//
+//    }
+
     @Override
     public UserResponseDTO updateUserProfile(Long userId, UserUpdateRequestDTO requestDTO) {
         return null;
