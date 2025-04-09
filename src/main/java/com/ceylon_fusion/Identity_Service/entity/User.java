@@ -30,19 +30,15 @@ public class User {
     private Long userId;
 
     @Column(name = "cf_id", nullable = false, unique = true)
-    private String cf_id;
+    private String cfId;
 
     @Column(name = "user_name",nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false, unique = true)
-    private String email;
 
-    @Column(name = "address", nullable = false)
-    private String address;
 
     @Column(name = "phone_number", nullable = false, unique = true)
-    private long phone_number;
+    private String phoneNumber;
 
     @Column(name="country" , nullable = false)
     private String country;
@@ -50,8 +46,11 @@ public class User {
     @Column(name="currency"     , nullable = false)
     private String currency;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
+
+    @Column(nullable = false, unique = true)  // Must be non-null
+    private String email;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING) // Store as a string in the database
@@ -67,17 +66,7 @@ public class User {
     private String resetToken;
 
     @Column(name = "token_expiry")
-    private Instant tokenExpiry;
-
-//    @ManyToMany(fetch = FetchType.EAGER)  // Fetch roles eagerly to load them with the user
-//    @JoinTable(
-//            name = "user_roles",  // Join table for the relationship
-//            joinColumns = @JoinColumn(name = "user_id"),  // Foreign key to User
-//            inverseJoinColumns = @JoinColumn(name = "role_id")  // Foreign key to Role
-//    )
-//    private Set<Role> roles = new HashSet<>();
-
-
+    private LocalDateTime tokenExpiry;
 
 
 
@@ -91,12 +80,37 @@ public class User {
     private List<UserBookingHistory> bookingHistories;
 
 
+
+    public List<UserPurchaseHistory> getPurchaseHistories() {
+        return purchaseHistories;
+    }
+
+    public void setPurchaseHistories(List<UserPurchaseHistory> purchaseHistories) {
+        this.purchaseHistories = purchaseHistories;
+    }
+
+    public List<UserBookingHistory> getBookingHistories() {
+        return bookingHistories;
+    }
+
+    public void setBookingHistories(List<UserBookingHistory> bookingHistories) {
+        this.bookingHistories = bookingHistories;
+    }
+
     public Long getUserId() {
         return userId;
     }
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getCfId() {
+        return cfId;
+    }
+
+    public void setCfId(String cfId) {
+        this.cfId = cfId;
     }
 
     public String getUsername() {
@@ -107,12 +121,23 @@ public class User {
         this.username = username;
     }
 
-    public String getEmail() {
-        return email;
+
+
+
+    public String getCountry() {
+        return country;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 
     public String getPassword() {
@@ -131,7 +156,6 @@ public class User {
         this.role = role;
     }
 
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -148,37 +172,65 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
-    public List<UserPurchaseHistory> getPurchaseHistories() {
-        return purchaseHistories;
-    }
-
-    public void setPurchaseHistories(List<UserPurchaseHistory> purchaseHistories) {
-        this.purchaseHistories = purchaseHistories;
-    }
-
-    public List<UserBookingHistory> getBookingHistories() {
-        return bookingHistories;
-    }
-
-    public void setBookingHistories(List<UserBookingHistory> bookingHistories) {
-        this.bookingHistories = bookingHistories;
-    }
-
-    public void setResetToken(String resetToken) {
-    }
-
-    public void setTokenExpiry(LocalDateTime localDateTime) {
-    }
-
-    public Instant getTokenExpiry() {
-        return null;
-    }
-
     public String getResetToken() {
         return resetToken;
     }
 
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
+    }
 
-    public void setRole(String user) {
+    public LocalDateTime getTokenExpiry() {
+        return tokenExpiry;
+    }
+
+    public void setTokenExpiry(LocalDateTime tokenExpiry) {
+        this.tokenExpiry = tokenExpiry;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setAddress(String address) {
+    }
+
+    public void setCity(String city) {
+    }
+
+    public void setState(String state) {
+    }
+
+    public void setZipCode(String zipCode) {
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getCf_id() {
+        return "";
+    }
+
+    public String getAddress() {
+        return "";
+    }
+
+
+
+    public String getProfilePhotoPath() {
+        return "";
+    }
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    // And ensure you have this getter:
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+
+    public void setProfilePhotoPath(String fileName) {
     }
 }

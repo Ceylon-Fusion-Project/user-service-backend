@@ -10,9 +10,18 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class UserResponseDTO {
-    private Long userId; // Updated from 'id' to match User entity
+    private Long userId;
+    private String cfId;// Updated from 'id' to match User entity
     private String username;
     private String email;
+
+    public String getCfId() {
+        return cfId;
+    }
+
+
+    @Setter
+    private String profilePhotoPath;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -66,4 +75,28 @@ public class UserResponseDTO {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    public void setCfId(String cfId) {
+    }
+
+    public void setAddress(String address) {
+    }
+
+    public void setPhoneNumber(String s) {
+    }
+
+    public void setCountry(String country) {
+    }
+
+    public void setRole(String name) {
+    }
+
+    public void setProfilePhotoUrl(String s) {
+
+    }
+
+    public String getProfilePhotoPath() {
+        return profilePhotoPath;
+    }
+
 }

@@ -4,14 +4,17 @@ package com.ceylon_fusion.Identity_Service.dto.request;
 import com.ceylon_fusion.Identity_Service.entity.enums.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.aspectj.bridge.ISourceLocation;
 
 import java.util.List;
 
+
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -42,7 +45,7 @@ public class UserRegistrationRequestDTO {
     private String address;
 
     @NotNull
-    @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Invalid phone number format")
+   // @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Invalid phone number format")
     private String phoneNumber;
 
     @NotNull
@@ -62,42 +65,22 @@ public class UserRegistrationRequestDTO {
     @Size(min = 0, max = 255, message = "Product preferences must be between 0 and 255 characters")
     private List<String> preferredCategories;
 
-    public String getCfId() {
-        return cfId;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
     }
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getCurrency() {
-        return currency;
-    }
-
     public void setCurrency(String currency) {
         this.currency = currency;
-    }
-
-    public String getZipCode() {
-        return zipCode;
     }
 
     public void setZipCode(String zipCode) {
         this.zipCode = zipCode;
     }
-
+  
     public List<String> getPreferredCategories() {
         return preferredCategories;
     }
@@ -108,14 +91,11 @@ public class UserRegistrationRequestDTO {
 
     public String getCity() {
         return city;
+
     }
 
     public void setCity(String city) {
         this.city = city;
-    }
-
-    public String getState() {
-        return state;
     }
 
     public void setState(String state) {
@@ -126,39 +106,67 @@ public class UserRegistrationRequestDTO {
         this.cfId = cfId;
     }
 
-    public String getCountry() {
-        return country;
-    }
-
     public void setCountry(String country) {
         this.country = country;
-    }
-
-    public String getUsername() {
-        return username;
     }
 
     public void setUsername(String username) {
         this.username = username;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
     public void setEmail(String email) {
         this.email = email;
     }
 
-
+    public @NotNull @Email String getEmail() {
+        return email;
+    }
 
     public Role getRole() {
         return role;
+    }
+
+    public String getCfId() {
+        return cfId;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public String getZipCode() {
+        return zipCode;
+    }
+
+    public List<String> getPreferredCategories() {
+        return preferredCategories;
     }
 
     public void setRole(Role role) {
         this.role = role;
     }
 
-
+    public String getUsername() {
+        return this.username;
+    }
 }

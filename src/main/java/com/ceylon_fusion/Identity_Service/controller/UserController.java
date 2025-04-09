@@ -1,23 +1,35 @@
 package com.ceylon_fusion.Identity_Service.controller;
 
 import com.ceylon_fusion.Identity_Service.dto.request.*;
-import com.ceylon_fusion.Identity_Service.dto.response.UserBookingHistoryResponseDTO;
-import com.ceylon_fusion.Identity_Service.dto.response.UserPurchaseHistoryResponseDTO;
-import com.ceylon_fusion.Identity_Service.dto.response.UserRegistrationResponseDTO;
-import com.ceylon_fusion.Identity_Service.dto.response.UserResponseDTO;
+import com.ceylon_fusion.Identity_Service.dto.response.*;
+import com.ceylon_fusion.Identity_Service.entity.User;
 import com.ceylon_fusion.Identity_Service.exception.EmailAlreadyExistsException;
+import com.ceylon_fusion.Identity_Service.exception.ResourceNotFoundException;
+import com.ceylon_fusion.Identity_Service.exception.UsernameAlreadyExistsException;
 import com.ceylon_fusion.Identity_Service.service.UserBookingHistoryService;
 import com.ceylon_fusion.Identity_Service.service.UserPurchaseHistoryService;
 import com.ceylon_fusion.Identity_Service.service.UserService;
 import com.ceylon_fusion.Identity_Service.util.StandardResponse;
+import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+import org.aspectj.bridge.MessageUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -27,6 +39,8 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    @Value("${file.upload-dir}")
+    private String uploadDir;
 
     @Autowired
     private UserPurchaseHistoryService userPurchaseHistoryService;
@@ -34,26 +48,32 @@ public class UserController {
     @Autowired
     private UserBookingHistoryService userBookingHistoryService;
 
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+
+
     @PostMapping("/register")
-    public ResponseEntity<StandardResponse> registerUser(@RequestBody @Valid UserRegistrationRequestDTO requestDTO) {
+    public ResponseEntity<StandardResponse> registerUser(
+            @RequestBody @Valid UserRegistrationRequestDTO requestDTO) {
         try {
-            // Call service to handle registration logic
+            logger.info("Attempting to register user: {}", requestDTO.getUsername());
             UserRegistrationResponseDTO response = userService.registerUser(requestDTO);
-
-            // Return success response
+            logger.info("User registered successfully: {}", requestDTO.getUsername());
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(new StandardResponse(201, "User Registered Successfully", response));
-        } catch (EmailAlreadyExistsException e) {
-            // Handle duplicate email exception
+                    .body(new StandardResponse(201, "User registered successfully", response));
+        } catch (UsernameAlreadyExistsException e) {
+            logger.warn("Registration failed - username exists: {}", requestDTO.getUsername());
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new StandardResponse(409, "Email is already in use.", null));
+                    .body(new StandardResponse(409, e.getMessage(), null));
+        } catch (EmailAlreadyExistsException e) {
+            logger.warn("Registration failed - email exists: {}", requestDTO.getEmail());
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new StandardResponse(409, e.getMessage(), null));
         } catch (Exception e) {
-            // Handle unexpected errors
+            logger.error("Registration failed for user {}: {}", requestDTO.getUsername(), e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new StandardResponse(500, "An unexpected error occurred.", null));
-        }}
-
-
+                    .body(new StandardResponse(500, "Registration failed: " + e.getMessage(), null));
+        }
+    }
     @PostMapping("/login")
     public ResponseEntity<StandardResponse> loginUser(
             @Valid @RequestBody UserLoginRequestDTO requestDTO)
@@ -93,6 +113,7 @@ public class UserController {
 //        return ResponseEntity.ok(new StandardResponse(200, "Profile updated successfully", updatedUser));
 //    }
 
+
     @GetMapping("/admin/get-by-id")
      //@PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<StandardResponse> getUserById(
@@ -101,15 +122,7 @@ public class UserController {
         return ResponseEntity.ok(new StandardResponse(200, "User retrieved successfully", user));
     }
 
-@PutMapping("/admin/update-by-id")
-//  @PreAuthorize("hasAuthority('ADMIN')")
-public ResponseEntity<StandardResponse> updateUser(
-        @RequestParam Long id,
-        @RequestBody UserUpdateRequestDTO requestDTO)
-{
-    UserResponseDTO updatedUser = userService.updateUser(id, requestDTO);
-    return ResponseEntity.ok(new StandardResponse(200, "User updated successfully", updatedUser));
-}
+
 
 
     @DeleteMapping("/admin/delete-by-id")
@@ -171,4 +184,30 @@ public ResponseEntity<StandardResponse> updateUser(
 
 
 
+@PutMapping("/update-profile")
+public ResponseEntity<StandardResponse> updateUserProfile(
+        @RequestParam(required = false) Long userId,
+        @RequestParam(required = false) String cfId,
+        @RequestBody UserUpdateRequestDTO requestDTO) {
+
+    if (userId == null && cfId == null) {
+        throw new IllegalArgumentException("Either userId or cfId must be provided");
     }
+
+    UserResponseDTO updatedUser;
+    if (userId != null) {
+        updatedUser = userService.updateUserProfile(userId, requestDTO);
+    } else {
+        updatedUser = userService.updateUserProfileByCfId(cfId, requestDTO);
+    }
+
+    return ResponseEntity.ok(new StandardResponse(200, "User updated successfully", updatedUser));
+}
+
+    @GetMapping("/get-by-cfid")
+    public ResponseEntity<StandardResponse> getUserByCfId(@RequestParam String cfId) {
+        UserResponseDTO user = userService.getUserByCfId(cfId);
+        return ResponseEntity.ok(new StandardResponse(200, "User retrieved successfully by cfId", user));
+    }
+
+}
